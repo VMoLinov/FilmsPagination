@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">FilmsPagination</string>
+    <string name="film_image_description">film image</string>
+    <string name="main_fragment">Главная</string>
+    <string name="callback_failure">Проверьте наличие сети и повторите</string>
+    <string name="repeat">Повторить</string>
+    <string name="year">"Год: "</string>
+    <string name="rating">"Рейтинг: "</string>
+</resources>
