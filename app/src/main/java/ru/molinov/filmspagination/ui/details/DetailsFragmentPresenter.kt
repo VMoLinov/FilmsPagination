@@ -12,7 +12,9 @@ class DetailsFragmentPresenter(
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
         data?.apply {
-            viewState.setImage(poster_path)
+            viewState.setTitle(original_title)
+            viewState.setPoster(poster_path)
+            viewState.setBackDrop(backdrop_path)
             viewState.setName(title)
             viewState.setYear(release_date)
             viewState.setRating(vote_average.toString())

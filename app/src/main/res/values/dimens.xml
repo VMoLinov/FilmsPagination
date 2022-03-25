@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="item_film_size">180dp</dimen>
-    <dimen name="item_film_margin">10dp</dimen>
+    <dimen name="item_film_margin">8dp</dimen>
     <dimen name="item_genre_size">200dp</dimen>
     <dimen name="chips_text_size">15sp</dimen>
     <dimen name="border_height">60dp</dimen>
     <dimen name="item_film_height">300dp</dimen>
-    <dimen name="corner_radius">10dp</dimen>
+    <dimen name="corner_radius">6dp</dimen>
 </resources>

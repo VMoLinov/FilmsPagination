@@ -9,4 +9,6 @@
     <string name="callback_genres_failure">Нет жанров</string>
     <string name="no_rating">NR</string>
     <string name="percent">%</string>
+    <string name="poster">poster</string>
+    <string name="overview">Overview</string>
 </resources>

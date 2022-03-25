@@ -50,6 +50,10 @@ class DetailsFragment : MvpAppCompatFragment(), DetailsFragmentView, BackButtonL
         }
     }
 
+    override fun setTitle(title: String?) {
+        binding.title.text = title
+    }
+
     override fun setName(name: String?) {
         binding.name.append(name)
     }
@@ -62,8 +66,12 @@ class DetailsFragment : MvpAppCompatFragment(), DetailsFragmentView, BackButtonL
         binding.rating.append(rating)
     }
 
-    override fun setImage(url: String?) {
-        imageLoader.loadFilmUrl(url, binding.image)
+    override fun setPoster(url: String?) {
+        imageLoader.loadFilmPoster(url, binding.poster)
+    }
+
+    override fun setBackDrop(url: String?) {
+        imageLoader.loadFilmBackDrop(url, binding.backDrop)
     }
 
     override fun setDescription(description: String?) {

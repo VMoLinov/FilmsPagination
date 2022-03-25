@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="@dimen/item_film_size"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="@dimen/item_film_margin"
+    android:layout_marginStart="@dimen/item_film_margin"
     android:layout_marginBottom="@dimen/item_film_margin">
 
     <androidx.appcompat.widget.AppCompatImageView

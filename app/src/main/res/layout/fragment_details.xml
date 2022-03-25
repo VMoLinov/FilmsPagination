@@ -10,23 +10,50 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/image"
-            android:layout_width="@dimen/item_film_size"
-            android:layout_height="@dimen/item_film_size"
-            android:layout_margin="@dimen/item_film_margin"
-            android:contentDescription="@string/film_image_description"
+            android:id="@+id/backDrop"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:contentDescription="@string/poster"
+            android:paddingBottom="20dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/img_1" />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="16dp"
+            android:maxLines="2"
+            android:textColor="@color/white"
+            android:textSize="40sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Иван Васильевич меняет профессию" />
+
+        <ImageView
+            android:id="@+id/poster"
+            android:layout_width="100dp"
+            android:layout_height="@dimen/item_film_size"
+            android:layout_marginHorizontal="@dimen/item_film_margin"
+            android:contentDescription="@string/film_image_description"
+            app:layout_constraintBottom_toTopOf="@id/overview"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            tools:src="@drawable/img" />
 
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_margin="@dimen/item_film_margin"
             android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="@id/image"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/image"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintStart_toEndOf="@id/poster"
+            app:layout_constraintTop_toTopOf="@id/poster">
 
             <TextView
                 android:id="@+id/name"
@@ -34,55 +61,50 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="2"
-                android:textColor="?attr/colorOnBackground"
+                android:textColor="@color/white"
                 android:textSize="@dimen/chips_text_size"
                 tools:text="Иван Васильевич..." />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@android:color/darker_gray" />
 
             <TextView
                 android:id="@+id/year"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/year"
-                android:textColor="?attr/colorOnBackground"
+                android:textColor="@color/white"
                 android:textSize="@dimen/chips_text_size" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@android:color/darker_gray" />
 
             <TextView
                 android:id="@+id/rating"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/rating"
-                android:textColor="?attr/colorOnBackground"
+                android:textColor="@color/white"
                 android:textSize="@dimen/chips_text_size" />
         </LinearLayout>
 
-        <View
+        <TextView
+            android:id="@+id/overview"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="wrap_content"
             android:layout_margin="@dimen/item_film_margin"
-            android:background="@android:color/darker_gray"
+            android:text="@string/overview"
+            android:textColor="?attr/colorOnBackground"
+            android:textSize="16sp"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/image" />
+            app:layout_constraintTop_toBottomOf="@id/poster" />
 
         <TextView
             android:id="@+id/description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/item_film_margin"
+            android:layout_marginHorizontal="16dp"
             android:textColor="?attr/colorOnBackground"
-            android:textSize="@dimen/chips_text_size"
+            android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/image" />
+            app:layout_constraintTop_toBottomOf="@id/overview"
+            tools:text="When once distant UFOs become a terrifying threat attacking Earth, a Marine staff sergeant and his team take it upon themselves to face the enemy and protect what remains of the planet." />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

@@ -101,7 +101,7 @@ class MainAdapter(
         }
 
         fun loadImage(url: String?) {
-            imageLoader.loadFilmUrl(url, binding.filmImage)
+            imageLoader.loadFilmPoster(url, binding.filmImage)
         }
 
         fun loadRating(vote: Float?) = with(binding) {
