@@ -4,11 +4,12 @@ import com.google.gson.GsonBuilder
 import retrofit2.Callback
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import ru.molinov.filmspagination.model.Films
+import ru.molinov.filmspagination.model.FilmsDTO
+import ru.molinov.filmspagination.model.GenresDTO
 
 object ApiHolder {
 
-    private const val BASE_URL = "https://s3-eu-west-1.amazonaws.com/sequeniatesttask/"
+    private const val BASE_URL = "https://api.themoviedb.org/3/"
     private val api: DataSource by lazy {
         val gson = GsonBuilder()
             .setLenient()
@@ -20,7 +21,11 @@ object ApiHolder {
             .create(DataSource::class.java)
     }
 
-    fun getData(callback: Callback<Films>) {
-        api.loadData().enqueue(callback)
+    fun getData(callback: Callback<FilmsDTO>, page: Int) {
+        api.loadData(page).enqueue(callback)
+    }
+
+    fun getGenres(callback: Callback<GenresDTO>) {
+        api.loadGenres().enqueue(callback)
     }
 }

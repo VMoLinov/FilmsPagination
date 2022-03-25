@@ -6,4 +6,7 @@
     <string name="repeat">Повторить</string>
     <string name="year">"Год: "</string>
     <string name="rating">"Рейтинг: "</string>
+    <string name="callback_genres_failure">Нет жанров</string>
+    <string name="no_rating">NR</string>
+    <string name="percent">%</string>
 </resources>

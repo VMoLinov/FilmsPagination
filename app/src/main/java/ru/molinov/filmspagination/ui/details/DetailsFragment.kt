@@ -63,7 +63,7 @@ class DetailsFragment : MvpAppCompatFragment(), DetailsFragmentView, BackButtonL
     }
 
     override fun setImage(url: String?) {
-        imageLoader.load(url, binding.image)
+        imageLoader.loadFilmUrl(url, binding.image)
     }
 
     override fun setDescription(description: String?) {

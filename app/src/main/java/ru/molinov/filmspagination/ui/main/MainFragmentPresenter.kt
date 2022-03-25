@@ -8,36 +8,48 @@ import retrofit2.Callback
 import retrofit2.Response
 import ru.molinov.filmspagination.R
 import ru.molinov.filmspagination.model.Film
-import ru.molinov.filmspagination.model.Films
+import ru.molinov.filmspagination.model.FilmsDTO
+import ru.molinov.filmspagination.model.Genre
+import ru.molinov.filmspagination.model.GenresDTO
 import ru.molinov.filmspagination.navigation.Screens
-import ru.molinov.filmspagination.remote.FilmsRepo
-import java.util.*
+import ru.molinov.filmspagination.remote.ApiHolder
 
 class MainFragmentPresenter(
-    private val data: FilmsRepo,
-    private val router: Router
+    private val api: ApiHolder,
+    private val router: Router,
+    private var page: Int = 1
 ) : MvpPresenter<MainFragmentView>() {
 
-    private val callback = object : Callback<Films> {
+    private val dataCallback = object : Callback<FilmsDTO> {
         override fun onResponse(
-            call: Call<Films>,
-            response: Response<Films>
+            call: Call<FilmsDTO>,
+            response: Response<FilmsDTO>
         ) {
-            val serverResponse: Films? = response.body()
+            val serverResponse: FilmsDTO? = response.body()
             if (response.isSuccessful && serverResponse != null) {
-                filmsListPresenter.films.addAll(serverResponse.films)
-                val genres: MutableSet<String> = mutableSetOf()
-                serverResponse.films.forEach {
-                    it.genres?.forEach { genre ->
+                filmsListPresenter.films.addAll(serverResponse.results)
+                val genres: MutableSet<Int> = mutableSetOf()
+                serverResponse.results.forEach {
+                    it.genre_ids?.forEach { genre ->
                         genres.add(genre)
                     }
                 }
                 filmsListPresenter.genres.addAll(genres)
                 filmsListPresenter.apply {
-                    data =
-                        (listOf(MainAdapter.Constants.GENRES_DELIMITER) + TreeSet(genres)
-                                + MainAdapter.Constants.FILMS_DELIMITER + TreeSet(films)).toList()
-                    cachedData = data.toList()
+                    if (cachedData.isNotEmpty()) {
+                        val cachedInt = mutableSetOf<Int>()
+                        val cachedFilms = mutableSetOf<Film>()
+                        cachedData.forEach {
+                            if (it is Int) cachedInt.add(it)
+                            if (it is Film) cachedFilms.add(it)
+                        }
+                        data =
+                            ((cachedInt + genres).toSet() + MainAdapter.Companion.Delimiter()
+                                    + (cachedFilms + films).toSet()).toList()
+                    } else {
+                        data = (genres + MainAdapter.Companion.Delimiter() + films).toList()
+                        cachedData = data.toList()
+                    }
                 }
                 viewState.renderData()
             } else {
@@ -45,16 +57,36 @@ class MainFragmentPresenter(
             }
         }
 
-        override fun onFailure(call: Call<Films>, t: Throwable) {
-            Log.d(TAG, "error " + t.stackTraceToString())
+        override fun onFailure(call: Call<FilmsDTO>, t: Throwable) {
+            Log.d(TAG, "error data " + t.stackTraceToString())
             viewState.showAlertDialog(R.string.callback_failure)
+        }
+    }
+    private val genresCallback = object : Callback<GenresDTO> {
+        override fun onResponse(
+            call: Call<GenresDTO>,
+            response: Response<GenresDTO>
+        ) {
+            val serverResponse: List<Genre>? = response.body()?.genres
+            if (response.isSuccessful && serverResponse != null) {
+                filmsListPresenter.genresIds.addAll(serverResponse)
+                api.getData(dataCallback, page++)
+            } else {
+                Log.d(TAG, "empty genres " + response.code())
+            }
+        }
+
+        override fun onFailure(call: Call<GenresDTO>, t: Throwable) {
+            Log.d(TAG, "error genres " + t.stackTraceToString())
+            viewState.showAlertDialog(R.string.callback_genres_failure)
         }
     }
 
     inner class FilmsListPresenter : ListPresenter<MainAdapter.BaseViewHolder> {
 
-        var films = mutableListOf<Film>()
-        var genres = mutableListOf<String>()
+        var films = mutableSetOf<Film>()
+        var genres = mutableSetOf<Int>()
+        var genresIds = mutableSetOf<Genre>()
         var data: List<Any> = mutableListOf()
         var cachedData: List<Any> = mutableListOf()
         internal var selectedItem: Int = -1
@@ -66,25 +98,23 @@ class MainFragmentPresenter(
             when (view) {
                 is MainAdapter.GenreViewHolder -> bindGenre(view)
                 is MainAdapter.FilmsViewHolder -> bindFilm(view)
-                is MainAdapter.DelimiterViewHolder -> bindDelimiter(view)
             }
         }
 
         private fun bindGenre(holder: MainAdapter.GenreViewHolder) {
-            holder.loadString(data[holder.pos] as String)
+            val id = data[holder.pos]
+            genresIds.forEach {
+                if (it.id == id) holder.loadTitle(it.name)
+            }
             holder.button.isChecked = holder.pos == selectedItem
         }
 
         private fun bindFilm(holder: MainAdapter.FilmsViewHolder) {
             val item = data[holder.pos] as Film
-            holder.loadString(item.localized_name)
-            holder.loadImage(item.image_url)
-        }
-
-        private fun bindDelimiter(holder: MainAdapter.DelimiterViewHolder) {
-            val constant = data[holder.pos] as MainAdapter.Constants
-            holder.loadString(constant.string)
-
+            holder.loadTitle(item.title)
+            holder.loadImage(item.poster_path)
+            holder.loadReleased(item.release_date.toString())
+            holder.loadRating(item.vote_average)
         }
 
         fun restoreData() {
@@ -120,10 +150,10 @@ class MainFragmentPresenter(
     private fun handleFilterReaction(holder: MainAdapter.GenreViewHolder) {
         filmsListPresenter.apply {
             selectedItem = holder.pos
-            val genre = holder.button.text
+            val genre = data[selectedItem] as Int
             val filteredFilms: MutableList<Film> = mutableListOf()
             films.forEach { film ->
-                if (film.genres?.contains(genre) == false) filteredFilms.add(film)
+                if (film.genre_ids?.contains(genre) == false) filteredFilms.add(film)
             }
             val newData = cachedData - filteredFilms.toSet()
             val removeRange: List<Int> = data.indices - newData.indices
@@ -131,12 +161,13 @@ class MainFragmentPresenter(
             val addRange: List<Int> = newData.indices - data.indices
             if (removeRange.isNotEmpty()) viewState.removeRange(removeRange)
             if (addRange.isNotEmpty()) viewState.addRange(addRange)
-            viewState.notifyItemsExclude(selectedItem, data.indices, true)
+            viewState.notifyItemsExclude(selectedItem, data.indices, false)
         }
     }
 
     fun loadData() {
-        data.getFilms(callback)
+        if (page != 1) api.getData(dataCallback, page++)
+        else api.getGenres(genresCallback)
     }
 
     fun backPressed(): Boolean {

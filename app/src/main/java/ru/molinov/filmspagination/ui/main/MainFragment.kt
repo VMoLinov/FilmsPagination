@@ -11,8 +11,8 @@ import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 import ru.molinov.filmspagination.R
 import ru.molinov.filmspagination.databinding.FragmentMainBinding
-import ru.molinov.filmspagination.model.FilmsRepoImpl
 import ru.molinov.filmspagination.navigation.BackButtonListener
+import ru.molinov.filmspagination.remote.ApiHolder
 import ru.molinov.filmspagination.ui.App
 import ru.molinov.filmspagination.ui.MainActivity
 
@@ -22,7 +22,7 @@ class MainFragment : MvpAppCompatFragment(), MainFragmentView, BackButtonListene
     private val binding get() = _binding!!
     private val presenter by moxyPresenter {
         MainFragmentPresenter(
-            FilmsRepoImpl(),
+            ApiHolder,
             App.instance.router
         )
     }
@@ -45,16 +45,21 @@ class MainFragment : MvpAppCompatFragment(), MainFragmentView, BackButtonListene
                 return adapter.getViewType(position)
             }
         }
-        binding.recyclerMain.layoutManager = layoutManager
-        binding.recyclerMain.adapter = adapter
+        with(binding) {
+            recyclerMain.layoutManager = layoutManager
+            recyclerMain.adapter = adapter
+            recyclerMain.setOnScrollChangeListener { _, _, _, _, _ ->
+                if (!binding.recyclerMain.canScrollVertically(1)) {
+                    presenter.loadData()
+                }
+            }
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun renderData() {
-        binding.recyclerMain.post {
-            adapter.notifyDataSetChanged()
-            binding.loading.animationView.visibility = View.GONE
-        }
+        binding.recyclerMain.post { adapter.notifyDataSetChanged() }
+        binding.loading.animationView.visibility = View.GONE
     }
 
     override fun notifyItemsExclude(position: Int, range: IntRange, scroll: Boolean) {
@@ -108,6 +113,6 @@ class MainFragment : MvpAppCompatFragment(), MainFragmentView, BackButtonListene
     }
 
     companion object {
-        const val GRID_SPAN_COUNT = 2 //columns of Grid Layout
+        const val GRID_SPAN_COUNT = 4 //columns of Grid Layout
     }
 }

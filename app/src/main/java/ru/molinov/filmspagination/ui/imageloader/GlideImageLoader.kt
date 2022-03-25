@@ -8,6 +8,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import ru.molinov.filmspagination.R
@@ -16,10 +17,11 @@ class GlideImageLoader : ImageLoader {
 
     private val handler = Handler(Looper.getMainLooper())
 
-    override fun load(url: String?, imageView: ImageView) {
+    override fun loadFilmUrl(url: String?, imageView: ImageView) {
         if (!url.isNullOrEmpty()) {
+            val radius = imageView.context.resources.getDimensionPixelSize(R.dimen.corner_radius)
             Glide.with(imageView.context)
-                .load(url)
+                .load(BASE_URL + url)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .listener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(
@@ -43,6 +45,7 @@ class GlideImageLoader : ImageLoader {
                     }
                 })
                 .centerCrop()
+                .transform(RoundedCorners(radius))
                 .into(imageView)
         } else {
             loadDrawableError(imageView)
@@ -54,5 +57,9 @@ class GlideImageLoader : ImageLoader {
         Glide.with(imageView.context)
             .load(R.drawable.ic_load_error_vector)
             .into(imageView)
+    }
+
+    companion object {
+        const val BASE_URL = "https://image.tmdb.org/t/p/w500/"
     }
 }
