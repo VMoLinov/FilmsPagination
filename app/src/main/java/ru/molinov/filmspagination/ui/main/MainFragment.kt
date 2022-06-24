@@ -1,16 +1,17 @@
 package ru.molinov.filmspagination.ui.main
 
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.GridLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 import ru.molinov.filmspagination.R
 import ru.molinov.filmspagination.databinding.FragmentMainBinding
+import ru.molinov.filmspagination.model.Film
+import ru.molinov.filmspagination.model.Genre
 import ru.molinov.filmspagination.navigation.BackButtonListener
 import ru.molinov.filmspagination.remote.ApiHolder
 import ru.molinov.filmspagination.ui.App
@@ -26,7 +27,8 @@ class MainFragment : MvpAppCompatFragment(), MainFragmentView, BackButtonListene
             App.instance.router
         )
     }
-    private val adapter by lazy { MainAdapter(presenter.filmsListPresenter) }
+    private val filmsAdapter by lazy { FilmsAdapter(presenter.filmsListPresenter) }
+    private val genresAdapter by lazy { GenresAdapter(presenter.genresListPresenter) }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,48 +41,53 @@ class MainFragment : MvpAppCompatFragment(), MainFragmentView, BackButtonListene
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val layoutManager = GridLayoutManager(requireContext(), GRID_SPAN_COUNT)
-        layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-            override fun getSpanSize(position: Int): Int {
-                return adapter.getViewType(position)
-            }
-        }
         with(binding) {
-            recyclerMain.layoutManager = layoutManager
-            recyclerMain.adapter = adapter
-            recyclerMain.setOnScrollChangeListener { _, _, _, _, _ ->
-                if (!binding.recyclerMain.canScrollVertically(1)) {
+            recyclerFilms.adapter = filmsAdapter
+            recyclerGenres.adapter = genresAdapter
+            recyclerFilms.setOnScrollChangeListener { _, _, _, _, _ ->
+                if (!binding.recyclerFilms.canScrollVertically(1)) {
                     presenter.loadData()
                 }
             }
         }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    override fun renderData() {
-        binding.recyclerMain.post { adapter.notifyDataSetChanged() }
+    override fun renderAllFilms(films: List<Film>) {
+        binding.recyclerFilms.post { filmsAdapter.submitList(films) }
         binding.loading.animationView.visibility = View.GONE
+    }
+
+    override fun renderFilteredFilms(films: List<Film>) {
+        binding.recyclerFilms.post { filmsAdapter.submitList(films) }
+    }
+
+    override fun renderGenres(genres: List<Genre>) {
+        binding.recyclerGenres.post { genresAdapter.submitList(genres) }
     }
 
     override fun notifyItemsExclude(position: Int, range: IntRange, scroll: Boolean) {
         repeat(range.count()) {
-            binding.recyclerMain.post {
-                if (it != position) adapter.notifyItemChanged(it)
-                if (scroll) binding.recyclerMain.scrollToPosition(range.last)
+            binding.recyclerFilms.post {
+                if (it != position) filmsAdapter.notifyItemChanged(it)
+                if (scroll) binding.recyclerFilms.scrollToPosition(range.last)
             }
         }
     }
 
     override fun removeRange(range: List<Int>) {
-        binding.recyclerMain.post {
-            adapter.notifyItemRangeRemoved(range.first(), range[range.lastIndex])
+        binding.recyclerFilms.post {
+            filmsAdapter.notifyItemRangeRemoved(range.first(), range[range.lastIndex])
         }
     }
 
     override fun addRange(range: List<Int>) {
-        binding.recyclerMain.post {
-            adapter.notifyItemRangeInserted(range.first(), range[range.lastIndex])
+        binding.recyclerFilms.post {
+            filmsAdapter.notifyItemRangeInserted(range.first(), range[range.lastIndex])
         }
+    }
+
+    override fun showError(message: String) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
     }
 
     override fun showAlertDialog(message: Int) {
@@ -110,9 +117,5 @@ class MainFragment : MvpAppCompatFragment(), MainFragmentView, BackButtonListene
             it.title = getString(R.string.main_fragment)
             it.setDisplayHomeAsUpEnabled(false)
         }
-    }
-
-    companion object {
-        const val GRID_SPAN_COUNT = 4 //columns of Grid Layout
     }
 }
