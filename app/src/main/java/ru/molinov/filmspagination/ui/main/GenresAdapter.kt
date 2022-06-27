@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.chip.Chip
 import ru.molinov.filmspagination.databinding.ItemRecyclerMainGenreBinding
 import ru.molinov.filmspagination.model.Genre
 
@@ -15,6 +16,7 @@ class GenresAdapter(
         override fun areContentsTheSame(o: Genre, n: Genre): Boolean = o.name == n.name
     }
 ) : ListAdapter<Genre, GenresAdapter.GenresViewHolder>(diff) {
+    private var lastChecked: Chip? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenresViewHolder {
         return GenresViewHolder(
@@ -23,7 +25,7 @@ class GenresAdapter(
                 parent,
                 false
             )
-        ).apply { itemView.setOnClickListener { presenter.itemCLickListener?.invoke(currentList[adapterPosition]) } }
+        ).apply { itemView.setOnClickListener { onItemClick() } }
     }
 
     override fun onBindViewHolder(holder: GenresViewHolder, position: Int) {
@@ -35,6 +37,17 @@ class GenresAdapter(
 
         fun bind(genre: Genre) {
             binding.genre.text = genre.name
+        }
+
+        fun onItemClick() {
+            if (binding.genre.isChecked) {
+                lastChecked?.let { it.isChecked = false }
+                lastChecked = binding.genre
+                presenter.itemCLickListener?.invoke(currentList[adapterPosition])
+            } else {
+                lastChecked = null
+                presenter.itemCLickListener?.invoke(null)
+            }
         }
     }
 }

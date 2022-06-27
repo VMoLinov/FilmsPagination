@@ -19,6 +19,8 @@ class MainFragmentPresenter(
     private var page: Int = 1
 ) : MvpPresenter<MainFragmentView>() {
 
+    private var genreId = -1
+
     private val dataCallback = object : Callback<FilmsDTO> {
         override fun onResponse(
             call: Call<FilmsDTO>,
@@ -28,7 +30,9 @@ class MainFragmentPresenter(
             if (response.isSuccessful && serverResponse != null) {
                 filmsListPresenter.films.apply {
                     addAll(serverResponse.results)
-                    viewState.renderAllFilms(this)
+                    if (genreId == -1) {
+                        viewState.renderAllFilms(this)
+                    } else filterFilms()
                 }
             } else {
                 viewState.showError("$TAG\nempty data ${response.code()}")
@@ -65,12 +69,12 @@ class MainFragmentPresenter(
     inner class FilmsListPresenter : ListPresenter<Film> {
         internal val films: MutableList<Film> = mutableListOf()
         internal var filteredFilms: List<Film> = listOf()
-        override var itemCLickListener: ((Film) -> Unit)? = null
+        override var itemCLickListener: ((Film?) -> Unit)? = null
     }
 
     inner class GenresListPresenter : ListPresenter<Genre> {
         internal val genres: MutableList<Genre> = mutableListOf()
-        override var itemCLickListener: ((Genre) -> Unit)? = null
+        override var itemCLickListener: ((Genre?) -> Unit)? = null
     }
 
     val filmsListPresenter = FilmsListPresenter()
@@ -85,17 +89,23 @@ class MainFragmentPresenter(
 
     private fun setListener() {
         filmsListPresenter.itemCLickListener = {
-            router.navigateTo(Screens.detailsScreen(it))
+            it?.let { router.navigateTo(Screens.detailsScreen(it)) }
         }
         genresListPresenter.itemCLickListener = {
-            filterFilms(it.id)
+            if (it != null) {
+                genreId = it.id
+                filterFilms()
+            } else {
+                genreId = -1
+                viewState.renderAllFilms(filmsListPresenter.films)
+            }
         }
     }
 
-    private fun filterFilms(genre_id: Int) {
+    private fun filterFilms() {
         filmsListPresenter.apply {
             filteredFilms = films.filter {
-                it.genre_ids?.contains(genre_id) ?: false
+                it.genre_ids?.contains(genreId) ?: false
             }
             viewState.renderFilteredFilms(filteredFilms)
         }

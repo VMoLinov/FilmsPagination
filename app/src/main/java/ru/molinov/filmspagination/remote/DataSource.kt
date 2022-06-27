@@ -10,7 +10,7 @@ import ru.molinov.filmspagination.model.GenresDTO
 
 interface DataSource {
 
-    @GET("discover/movie?api_key=$TOKEN&page=")
+    @GET("discover/movie?api_key=$TOKEN")
     fun loadData(@Query("page") page: Int): Call<FilmsDTO>
 
     @GET("genre/movie/list?api_key=$TOKEN")
