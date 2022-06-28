@@ -7,4 +7,6 @@
     <dimen name="border_height">60dp</dimen>
     <dimen name="item_film_height">300dp</dimen>
     <dimen name="corner_radius">6dp</dimen>
+    <dimen name="cast_movie_height">180dp</dimen>
+    <dimen name="cast_movie_width">120dp</dimen>
 </resources>

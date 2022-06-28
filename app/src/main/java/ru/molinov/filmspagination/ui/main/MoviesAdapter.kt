@@ -5,17 +5,21 @@ import android.content.res.Resources
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.isVisible
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.molinov.filmspagination.R
 import ru.molinov.filmspagination.databinding.ItemRecyclerMainMovieBinding
 import ru.molinov.filmspagination.model.Movie
+import ru.molinov.filmspagination.ui.details.DetailsFragment
 import ru.molinov.filmspagination.ui.imageloader.GlideImageLoader
 import ru.molinov.filmspagination.ui.imageloader.ImageLoader
 
 class MoviesAdapter(
-    private val presenter: MainFragmentPresenter.FilmsListPresenter,
+    private val presenter: MainFragmentPresenter.MoviesListPresenter,
+    private val manager: FragmentManager,
     private val imageLoader: ImageLoader = GlideImageLoader(),
     diff: DiffUtil.ItemCallback<Movie> = object : DiffUtil.ItemCallback<Movie>() {
         override fun areItemsTheSame(o: Movie, n: Movie): Boolean = o.id == n.id
@@ -30,7 +34,12 @@ class MoviesAdapter(
                 parent,
                 false
             )
-        ).apply { itemView.setOnClickListener { presenter.itemCLickListener?.invoke(currentList[adapterPosition]) } }
+        ).apply {
+            itemView.setOnClickListener {
+                presenter.itemCLickListener?.invoke(currentList[adapterPosition])
+                showDetails()
+            }
+        }
     }
 
     override fun getItemCount(): Int = currentList.size
@@ -50,9 +59,17 @@ class MoviesAdapter(
         fun bind(movie: Movie) = with(binding) {
             movieName.text = movie.title
             released.text = movie.release_date
-            imageLoader.loadFilmPoster(movie.poster_path, movieImage)
+            imageLoader.loadFilmPoster(movie.poster_path, movieImage, progressLayout.progressBar)
             loadRating(movie.vote_average)
             movieImage.transitionName = movie.title
+        }
+
+        fun showDetails() {
+            manager.beginTransaction()
+                .replace(R.id.container, DetailsFragment.newInstance(currentList[adapterPosition]))
+                .addSharedElement(binding.movieImage, "shared")
+                .addToBackStack(null)
+                .commit()
         }
 
         private fun loadRating(vote: Float?) = with(binding) {

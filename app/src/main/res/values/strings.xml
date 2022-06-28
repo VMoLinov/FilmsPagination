@@ -11,4 +11,5 @@
     <string name="percent">%</string>
     <string name="poster">poster</string>
     <string name="overview">Overview</string>
+    <string name="cast_image">cast image</string>
 </resources>

@@ -37,10 +37,11 @@
 
         <ImageView
             android:id="@+id/poster"
-            android:layout_width="100dp"
-            android:layout_height="@dimen/item_film_size"
+            android:layout_width="150dp"
+            android:layout_height="200dp"
             android:layout_marginHorizontal="@dimen/item_film_margin"
             android:contentDescription="@string/film_image_description"
+            android:transitionName="shared"
             app:layout_constraintBottom_toTopOf="@id/overview"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/title"
@@ -106,5 +107,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/overview"
             tools:text="When once distant UFOs become a terrifying threat attacking Earth, a Marine staff sergeant and his team take it upon themselves to face the enemy and protect what remains of the planet." />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerArtists"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/description"
+            tools:listitem="@layout/item_recycler_details_cast" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

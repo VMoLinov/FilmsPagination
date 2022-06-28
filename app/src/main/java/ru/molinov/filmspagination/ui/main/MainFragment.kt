@@ -2,9 +2,11 @@ package ru.molinov.filmspagination.ui.main
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.doOnAttach
 import androidx.core.view.doOnPreDraw
 import com.google.android.material.snackbar.Snackbar
 import moxy.MvpAppCompatFragment
@@ -13,22 +15,22 @@ import ru.molinov.filmspagination.R
 import ru.molinov.filmspagination.databinding.FragmentMainBinding
 import ru.molinov.filmspagination.model.Genre
 import ru.molinov.filmspagination.model.Movie
-import ru.molinov.filmspagination.navigation.BackButtonListener
 import ru.molinov.filmspagination.remote.ApiHolder
-import ru.molinov.filmspagination.ui.App
 import ru.molinov.filmspagination.ui.MainActivity
 
-class MainFragment : MvpAppCompatFragment(), MainFragmentView, BackButtonListener {
+class MainFragment : MvpAppCompatFragment(), MainFragmentView {
 
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
     private val presenter by moxyPresenter {
-        MainFragmentPresenter(
-            ApiHolder,
-            App.instance.router
+        MainFragmentPresenter(ApiHolder)
+    }
+    private val moviesAdapter by lazy {
+        MoviesAdapter(
+            presenter.moviesListPresenter,
+            parentFragmentManager
         )
     }
-    private val moviesAdapter by lazy { MoviesAdapter(presenter.filmsListPresenter) }
     private val genresAdapter by lazy { GenresAdapter(presenter.genresListPresenter) }
 
     override fun onCreateView(
@@ -40,8 +42,17 @@ class MainFragment : MvpAppCompatFragment(), MainFragmentView, BackButtonListene
         return binding.root
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val anim =
+            TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.fade)
+        enterTransition = anim
+        exitTransition = anim
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        postponeEnterTransition()
         with(binding) {
             recyclerFilms.adapter = moviesAdapter
             recyclerGenres.adapter = genresAdapter
@@ -99,14 +110,13 @@ class MainFragment : MvpAppCompatFragment(), MainFragmentView, BackButtonListene
             .setMessage(getString(message))
             .setPositiveButton(getString(R.string.repeat)) { dialogInterface, _ ->
                 dialogInterface.dismiss()
-                presenter.loadData()
+                when (message) {
+                    R.string.callback_failure -> presenter.loadData()
+                    R.string.callback_genres_failure -> presenter.loadGenres()
+                }
             }
             .create()
             .show()
-    }
-
-    override fun backPressed(): Boolean {
-        return presenter.backPressed()
     }
 
     override fun onDestroy() {

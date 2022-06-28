@@ -1,30 +1,53 @@
 package ru.molinov.filmspagination.ui.details
 
-import com.github.terrakok.cicerone.Router
 import moxy.MvpPresenter
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import ru.molinov.filmspagination.R
 import ru.molinov.filmspagination.model.Movie
+import ru.molinov.filmspagination.model.MovieCreditsDTO
+import ru.molinov.filmspagination.model.MoviesDTO
+import ru.molinov.filmspagination.remote.ApiHolder
+import ru.molinov.filmspagination.ui.main.MainFragmentPresenter
 
 class DetailsFragmentPresenter(
-    private val data: Movie?,
-    private val router: Router
+    private val api: ApiHolder,
+    private val movie: Movie?
 ) : MvpPresenter<DetailsFragmentView>() {
+    private val callback = object : Callback<MovieCreditsDTO> {
+        override fun onResponse(
+            call: Call<MovieCreditsDTO>,
+            response: Response<MovieCreditsDTO>
+        ) {
+            val serverResponse: MovieCreditsDTO? = response.body()
+            if (response.isSuccessful && serverResponse != null) {
+                val casts = serverResponse.cast
+                viewState.showCasts(casts)
+            } else {
+                viewState.showError("${TAG}\nempty data ${response.code()}")
+            }
+        }
 
-    override fun onFirstViewAttach() {
-        super.onFirstViewAttach()
-        data?.apply {
-            viewState.setTitle(original_title)
-            viewState.setPoster(poster_path)
-            viewState.setBackDrop(backdrop_path)
-            viewState.setName(title)
-            viewState.setYear(release_date)
-            viewState.setRating(vote_average.toString())
-            viewState.setDescription(overview)
-            viewState.setActionBar(original_title)
+        override fun onFailure(call: Call<MovieCreditsDTO>, t: Throwable) {
+            viewState.showError("${TAG}\nerror data ${t.stackTraceToString()}")
+            viewState.showAlertDialog(R.string.callback_failure)
         }
     }
 
-    fun backPressed(): Boolean {
-        router.exit()
-        return true
+    override fun onFirstViewAttach() {
+        super.onFirstViewAttach()
+        movie?.let {
+            viewState.showData(it)
+            getCredits()
+        }
+    }
+
+    fun getCredits() {
+        movie?.let { api.getCredits(callback, it.id) }
+    }
+
+    companion object {
+        const val TAG = "DetailsFragmentPresenter"
     }
 }

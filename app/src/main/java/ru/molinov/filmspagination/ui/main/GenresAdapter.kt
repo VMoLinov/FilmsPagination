@@ -39,6 +39,7 @@ class GenresAdapter(
             binding.genre.apply {
                 text = genre.name
                 isChecked = lastChecked?.text == text
+                if (isChecked) lastChecked = this
             }
         }
 

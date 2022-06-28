@@ -6,6 +6,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.molinov.filmspagination.model.MoviesDTO
 import ru.molinov.filmspagination.model.GenresDTO
+import ru.molinov.filmspagination.model.MovieCreditsDTO
 
 object ApiHolder {
 
@@ -27,5 +28,9 @@ object ApiHolder {
 
     fun getGenres(callback: Callback<GenresDTO>) {
         api.loadGenres().enqueue(callback)
+    }
+
+    fun getCredits(callback: Callback<MovieCreditsDTO>, movieId: Int) {
+        api.loadCredits(movieId).enqueue(callback)
     }
 }

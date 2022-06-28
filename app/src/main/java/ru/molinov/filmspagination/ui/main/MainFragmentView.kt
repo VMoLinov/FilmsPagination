@@ -2,9 +2,9 @@ package ru.molinov.filmspagination.ui.main
 
 import moxy.MvpView
 import moxy.viewstate.strategy.alias.AddToEndSingle
-import moxy.viewstate.strategy.alias.SingleState
-import ru.molinov.filmspagination.model.Movie
+import moxy.viewstate.strategy.alias.OneExecution
 import ru.molinov.filmspagination.model.Genre
+import ru.molinov.filmspagination.model.Movie
 
 @AddToEndSingle
 interface MainFragmentView : MvpView {
@@ -21,7 +21,7 @@ interface MainFragmentView : MvpView {
 
     fun addRange(range: List<Int>)
 
-    @SingleState
+    @OneExecution
     fun showAlertDialog(message: Int)
 
     fun showError(message: String)

@@ -2,16 +2,16 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="@dimen/item_film_size"
+    android:layout_width="@dimen/cast_movie_width"
     android:layout_height="wrap_content"
     android:layout_marginStart="@dimen/item_film_margin"
     android:layout_marginBottom="@dimen/item_film_margin">
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/movieImage"
+        android:id="@+id/castImage"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/item_film_height"
-        android:contentDescription="@string/film_image_description"
+        android:layout_height="@dimen/cast_movie_height"
+        android:contentDescription="@string/cast_image"
         android:elevation="10dp"
         android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="parent"
@@ -19,16 +19,8 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:src="@drawable/img" />
 
-    <View
-        android:id="@+id/delimiter"
-        android:layout_width="match_parent"
-        android:layout_height="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/movieImage" />
-
     <TextView
-        android:id="@+id/movieName"
+        android:id="@+id/castName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
@@ -36,45 +28,18 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/delimiter"
-        tools:text="Иван Васильевич меняет профессию" />
+        app:layout_constraintTop_toBottomOf="@id/castImage"
+        tools:text="Джаред Лето" />
 
     <TextView
-        android:id="@+id/released"
+        android:id="@+id/character"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/movieName"
-        tools:text="18 Dec 2019" />
-
-    <ProgressBar
-        android:id="@+id/rating"
-        style="@style/CircularDeterminateProgressBar"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:layout_marginStart="16dp"
-        android:contentDescription="@string/rating"
-        android:elevation="20dp"
-        android:indeterminateOnly="false"
-        android:rotation="-90"
-        app:layout_constraintBottom_toTopOf="@+id/movieName"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:progress="62" />
-
-    <TextView
-        android:id="@+id/textRating"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:layout_marginStart="16dp"
-        android:elevation="21dp"
-        android:gravity="center"
-        android:textColor="@color/white"
-        android:textSize="11sp"
-        app:layout_constraintBottom_toTopOf="@id/movieName"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:text="62%" />
+        app:layout_constraintTop_toBottomOf="@id/castName"
+        tools:text="Сварщик" />
 
     <FrameLayout
         android:layout_width="wrap_content"

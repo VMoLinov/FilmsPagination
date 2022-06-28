@@ -3,7 +3,9 @@ package ru.molinov.filmspagination.ui.imageloader
 import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.os.Looper
+import android.view.View
 import android.widget.ImageView
+import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -17,17 +19,17 @@ class GlideImageLoader : ImageLoader {
 
     private val handler = Handler(Looper.getMainLooper())
 
-    override fun loadFilmPoster(url: String?, imageView: ImageView) {
-        if (!url.isNullOrEmpty()) loadUrl(url, imageView, true)
+    override fun loadFilmPoster(url: String?, imageView: ImageView, progress: View?) {
+        if (!url.isNullOrEmpty()) loadUrl(url, imageView, true, progress)
         else loadDrawableError(imageView)
     }
 
-    override fun loadFilmBackDrop(url: String?, imageView: ImageView) {
-        if (!url.isNullOrEmpty()) loadUrl(url, imageView, false)
+    override fun loadFilmBackDrop(url: String?, imageView: ImageView, progress: View?) {
+        if (!url.isNullOrEmpty()) loadUrl(url, imageView, false, progress)
         else loadDrawableError(imageView)
     }
 
-    private fun loadUrl(url: String, imageView: ImageView, isCircle: Boolean) {
+    private fun loadUrl(url: String, imageView: ImageView, isCircle: Boolean, progress: View?) {
         val radius: Int =
             if (isCircle) imageView.context.resources.getDimensionPixelSize(R.dimen.corner_radius)
             else 1
@@ -52,6 +54,7 @@ class GlideImageLoader : ImageLoader {
                     dataSource: DataSource?,
                     isFirstResource: Boolean
                 ): Boolean {
+                    progress?.isVisible = false
                     return false
                 }
             })

@@ -1,6 +1,5 @@
 package ru.molinov.filmspagination.ui.main
 
-import com.github.terrakok.cicerone.Router
 import moxy.MvpPresenter
 import retrofit2.Call
 import retrofit2.Callback
@@ -10,12 +9,10 @@ import ru.molinov.filmspagination.model.Genre
 import ru.molinov.filmspagination.model.GenresDTO
 import ru.molinov.filmspagination.model.Movie
 import ru.molinov.filmspagination.model.MoviesDTO
-import ru.molinov.filmspagination.navigation.Screens
 import ru.molinov.filmspagination.remote.ApiHolder
 
 class MainFragmentPresenter(
     private val api: ApiHolder,
-    private val router: Router,
     private var page: Int = 1
 ) : MvpPresenter<MainFragmentView>() {
 
@@ -28,7 +25,7 @@ class MainFragmentPresenter(
         ) {
             val serverResponse: MoviesDTO? = response.body()
             if (response.isSuccessful && serverResponse != null) {
-                filmsListPresenter.movies.apply {
+                moviesListPresenter.movies.apply {
                     addAll(serverResponse.results)
                     if (genreId == -1) {
                         viewState.renderAllFilms(this)
@@ -66,30 +63,29 @@ class MainFragmentPresenter(
         }
     }
 
-    inner class FilmsListPresenter : ListPresenter<Movie> {
-        internal val movies: MutableList<Movie> = mutableListOf()
-        internal var filteredMovies: List<Movie> = listOf()
+    inner class MoviesListPresenter : ListPresenter<Movie> {
+        val movies: MutableList<Movie> = mutableListOf()
+        var filteredMovies: List<Movie> = listOf()
         override var itemCLickListener: ((Movie?) -> Unit)? = null
     }
 
     inner class GenresListPresenter : ListPresenter<Genre> {
-        internal val genres: MutableList<Genre> = mutableListOf()
+        val genres: MutableList<Genre> = mutableListOf()
         override var itemCLickListener: ((Genre?) -> Unit)? = null
     }
 
-    val filmsListPresenter = FilmsListPresenter()
+    val moviesListPresenter = MoviesListPresenter()
     val genresListPresenter = GenresListPresenter()
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
-        api.getGenres(genresCallback)
+        loadGenres()
         loadData()
         setListener()
     }
 
     private fun setListener() {
-        filmsListPresenter.itemCLickListener = {
-            it?.let { router.navigateTo(Screens.detailsScreen(it)) }
+        moviesListPresenter.itemCLickListener = {
         }
         genresListPresenter.itemCLickListener = {
             if (it != null) {
@@ -97,13 +93,13 @@ class MainFragmentPresenter(
                 filterFilms()
             } else {
                 genreId = -1
-                viewState.renderAllFilms(filmsListPresenter.movies)
+                viewState.renderAllFilms(moviesListPresenter.movies)
             }
         }
     }
 
     private fun filterFilms() {
-        filmsListPresenter.apply {
+        moviesListPresenter.apply {
             filteredMovies = movies.filter {
                 it.genre_ids.contains(genreId)
             }
@@ -112,10 +108,8 @@ class MainFragmentPresenter(
     }
 
     fun loadData() = api.getData(dataCallback, page++)
-    fun backPressed(): Boolean {
-        router.exit()
-        return true
-    }
+    fun loadGenres() = api.getGenres(genresCallback)
+
 
     companion object {
         const val TAG = "MainFragmentPresenter"
