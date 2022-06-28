@@ -4,7 +4,7 @@ import com.google.gson.GsonBuilder
 import retrofit2.Callback
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import ru.molinov.filmspagination.model.FilmsDTO
+import ru.molinov.filmspagination.model.MoviesDTO
 import ru.molinov.filmspagination.model.GenresDTO
 
 object ApiHolder {
@@ -21,7 +21,7 @@ object ApiHolder {
             .create(DataSource::class.java)
     }
 
-    fun getData(callback: Callback<FilmsDTO>, page: Int) {
+    fun getData(callback: Callback<MoviesDTO>, page: Int) {
         api.loadData(page).enqueue(callback)
     }
 

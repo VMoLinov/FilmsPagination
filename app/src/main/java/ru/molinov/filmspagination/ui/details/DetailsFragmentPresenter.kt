@@ -2,10 +2,10 @@ package ru.molinov.filmspagination.ui.details
 
 import com.github.terrakok.cicerone.Router
 import moxy.MvpPresenter
-import ru.molinov.filmspagination.model.Film
+import ru.molinov.filmspagination.model.Movie
 
 class DetailsFragmentPresenter(
-    private val data: Film?,
+    private val data: Movie?,
     private val router: Router
 ) : MvpPresenter<DetailsFragmentView>() {
 

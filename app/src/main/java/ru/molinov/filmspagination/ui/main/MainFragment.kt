@@ -5,13 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.doOnPreDraw
 import com.google.android.material.snackbar.Snackbar
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 import ru.molinov.filmspagination.R
 import ru.molinov.filmspagination.databinding.FragmentMainBinding
-import ru.molinov.filmspagination.model.Film
 import ru.molinov.filmspagination.model.Genre
+import ru.molinov.filmspagination.model.Movie
 import ru.molinov.filmspagination.navigation.BackButtonListener
 import ru.molinov.filmspagination.remote.ApiHolder
 import ru.molinov.filmspagination.ui.App
@@ -27,7 +28,7 @@ class MainFragment : MvpAppCompatFragment(), MainFragmentView, BackButtonListene
             App.instance.router
         )
     }
-    private val filmsAdapter by lazy { FilmsAdapter(presenter.filmsListPresenter) }
+    private val moviesAdapter by lazy { MoviesAdapter(presenter.filmsListPresenter) }
     private val genresAdapter by lazy { GenresAdapter(presenter.genresListPresenter) }
 
     override fun onCreateView(
@@ -42,8 +43,11 @@ class MainFragment : MvpAppCompatFragment(), MainFragmentView, BackButtonListene
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            recyclerFilms.adapter = filmsAdapter
+            recyclerFilms.adapter = moviesAdapter
             recyclerGenres.adapter = genresAdapter
+            recyclerFilms.doOnPreDraw {
+                startPostponedEnterTransition()
+            }
             recyclerFilms.setOnScrollChangeListener { _, _, _, _, _ ->
                 if (!binding.recyclerFilms.canScrollVertically(1)) {
                     presenter.loadData()
@@ -52,13 +56,13 @@ class MainFragment : MvpAppCompatFragment(), MainFragmentView, BackButtonListene
         }
     }
 
-    override fun renderAllFilms(films: List<Film>) {
-        binding.recyclerFilms.post { filmsAdapter.submitList(films) }
+    override fun renderAllFilms(movies: List<Movie>) {
+        binding.recyclerFilms.post { moviesAdapter.submitList(movies) }
         binding.loading.animationView.visibility = View.GONE
     }
 
-    override fun renderFilteredFilms(films: List<Film>) {
-        binding.recyclerFilms.post { filmsAdapter.submitList(films) }
+    override fun renderFilteredFilms(movies: List<Movie>) {
+        binding.recyclerFilms.post { moviesAdapter.submitList(movies) }
     }
 
     override fun renderGenres(genres: List<Genre>) {
@@ -68,7 +72,7 @@ class MainFragment : MvpAppCompatFragment(), MainFragmentView, BackButtonListene
     override fun notifyItemsExclude(position: Int, range: IntRange, scroll: Boolean) {
         repeat(range.count()) {
             binding.recyclerFilms.post {
-                if (it != position) filmsAdapter.notifyItemChanged(it)
+                if (it != position) moviesAdapter.notifyItemChanged(it)
                 if (scroll) binding.recyclerFilms.scrollToPosition(range.last)
             }
         }
@@ -76,13 +80,13 @@ class MainFragment : MvpAppCompatFragment(), MainFragmentView, BackButtonListene
 
     override fun removeRange(range: List<Int>) {
         binding.recyclerFilms.post {
-            filmsAdapter.notifyItemRangeRemoved(range.first(), range[range.lastIndex])
+            moviesAdapter.notifyItemRangeRemoved(range.first(), range[range.lastIndex])
         }
     }
 
     override fun addRange(range: List<Int>) {
         binding.recyclerFilms.post {
-            filmsAdapter.notifyItemRangeInserted(range.first(), range[range.lastIndex])
+            moviesAdapter.notifyItemRangeInserted(range.first(), range[range.lastIndex])
         }
     }
 

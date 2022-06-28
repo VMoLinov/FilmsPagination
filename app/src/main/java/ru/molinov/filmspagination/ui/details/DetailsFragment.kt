@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 import ru.molinov.filmspagination.databinding.FragmentDetailsBinding
-import ru.molinov.filmspagination.model.Film
+import ru.molinov.filmspagination.model.Movie
 import ru.molinov.filmspagination.navigation.BackButtonListener
 import ru.molinov.filmspagination.ui.App
 import ru.molinov.filmspagination.ui.MainActivity
@@ -41,9 +41,9 @@ class DetailsFragment : MvpAppCompatFragment(), DetailsFragmentView, BackButtonL
 
     companion object {
         const val PARCEL = "New_instance"
-        fun newInstance(film: Film): DetailsFragment {
+        fun newInstance(movie: Movie): DetailsFragment {
             val b = Bundle()
-            b.putParcelable(PARCEL, film)
+            b.putParcelable(PARCEL, movie)
             val f = DetailsFragment()
             f.arguments = b
             return f

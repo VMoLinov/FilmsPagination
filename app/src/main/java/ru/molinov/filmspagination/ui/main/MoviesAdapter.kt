@@ -9,23 +9,23 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.molinov.filmspagination.R
-import ru.molinov.filmspagination.databinding.ItemRecyclerMainFilmBinding
-import ru.molinov.filmspagination.model.Film
+import ru.molinov.filmspagination.databinding.ItemRecyclerMainMovieBinding
+import ru.molinov.filmspagination.model.Movie
 import ru.molinov.filmspagination.ui.imageloader.GlideImageLoader
 import ru.molinov.filmspagination.ui.imageloader.ImageLoader
 
-class FilmsAdapter(
+class MoviesAdapter(
     private val presenter: MainFragmentPresenter.FilmsListPresenter,
     private val imageLoader: ImageLoader = GlideImageLoader(),
-    diff: DiffUtil.ItemCallback<Film> = object : DiffUtil.ItemCallback<Film>() {
-        override fun areItemsTheSame(o: Film, n: Film): Boolean = o.id == n.id
-        override fun areContentsTheSame(o: Film, n: Film): Boolean = o.title == n.title
+    diff: DiffUtil.ItemCallback<Movie> = object : DiffUtil.ItemCallback<Movie>() {
+        override fun areItemsTheSame(o: Movie, n: Movie): Boolean = o.id == n.id
+        override fun areContentsTheSame(o: Movie, n: Movie): Boolean = o.title == n.title
     }
-) : ListAdapter<Film, FilmsAdapter.FilmsViewHolder>(diff) {
+) : ListAdapter<Movie, MoviesAdapter.FilmsViewHolder>(diff) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FilmsViewHolder {
         return FilmsViewHolder(
-            ItemRecyclerMainFilmBinding.inflate(
+            ItemRecyclerMainMovieBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
@@ -39,20 +39,20 @@ class FilmsAdapter(
         holder.bind(currentList[position])
     }
 
-    override fun submitList(list: List<Film>?) {
+    override fun submitList(list: List<Movie>?) {
         super.submitList(list)
         notifyItemChanged(currentList.lastIndex)
     }
 
-
-    inner class FilmsViewHolder(private val binding: ItemRecyclerMainFilmBinding) :
+    inner class FilmsViewHolder(private val binding: ItemRecyclerMainMovieBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(film: Film) = with(binding) {
-            filmName.text = film.title
-            released.text = film.release_date
-            imageLoader.loadFilmPoster(film.poster_path, filmImage)
-            loadRating(film.vote_average)
+        fun bind(movie: Movie) = with(binding) {
+            movieName.text = movie.title
+            released.text = movie.release_date
+            imageLoader.loadFilmPoster(movie.poster_path, movieImage)
+            loadRating(movie.vote_average)
+            movieImage.transitionName = movie.title
         }
 
         private fun loadRating(vote: Float?) = with(binding) {

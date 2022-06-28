@@ -32,7 +32,7 @@
             android:layout_gravity="center_horizontal"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:spanCount="2"
-            tools:listitem="@layout/item_recycler_main_film" />
+            tools:listitem="@layout/item_recycler_main_movie" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <include

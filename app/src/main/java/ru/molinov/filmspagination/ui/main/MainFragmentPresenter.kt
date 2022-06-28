@@ -6,10 +6,10 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import ru.molinov.filmspagination.R
-import ru.molinov.filmspagination.model.Film
-import ru.molinov.filmspagination.model.FilmsDTO
 import ru.molinov.filmspagination.model.Genre
 import ru.molinov.filmspagination.model.GenresDTO
+import ru.molinov.filmspagination.model.Movie
+import ru.molinov.filmspagination.model.MoviesDTO
 import ru.molinov.filmspagination.navigation.Screens
 import ru.molinov.filmspagination.remote.ApiHolder
 
@@ -21,14 +21,14 @@ class MainFragmentPresenter(
 
     private var genreId = -1
 
-    private val dataCallback = object : Callback<FilmsDTO> {
+    private val dataCallback = object : Callback<MoviesDTO> {
         override fun onResponse(
-            call: Call<FilmsDTO>,
-            response: Response<FilmsDTO>
+            call: Call<MoviesDTO>,
+            response: Response<MoviesDTO>
         ) {
-            val serverResponse: FilmsDTO? = response.body()
+            val serverResponse: MoviesDTO? = response.body()
             if (response.isSuccessful && serverResponse != null) {
-                filmsListPresenter.films.apply {
+                filmsListPresenter.movies.apply {
                     addAll(serverResponse.results)
                     if (genreId == -1) {
                         viewState.renderAllFilms(this)
@@ -39,7 +39,7 @@ class MainFragmentPresenter(
             }
         }
 
-        override fun onFailure(call: Call<FilmsDTO>, t: Throwable) {
+        override fun onFailure(call: Call<MoviesDTO>, t: Throwable) {
             viewState.showError("$TAG\nerror data ${t.stackTraceToString()}")
             viewState.showAlertDialog(R.string.callback_failure)
         }
@@ -66,10 +66,10 @@ class MainFragmentPresenter(
         }
     }
 
-    inner class FilmsListPresenter : ListPresenter<Film> {
-        internal val films: MutableList<Film> = mutableListOf()
-        internal var filteredFilms: List<Film> = listOf()
-        override var itemCLickListener: ((Film?) -> Unit)? = null
+    inner class FilmsListPresenter : ListPresenter<Movie> {
+        internal val movies: MutableList<Movie> = mutableListOf()
+        internal var filteredMovies: List<Movie> = listOf()
+        override var itemCLickListener: ((Movie?) -> Unit)? = null
     }
 
     inner class GenresListPresenter : ListPresenter<Genre> {
@@ -97,17 +97,17 @@ class MainFragmentPresenter(
                 filterFilms()
             } else {
                 genreId = -1
-                viewState.renderAllFilms(filmsListPresenter.films)
+                viewState.renderAllFilms(filmsListPresenter.movies)
             }
         }
     }
 
     private fun filterFilms() {
         filmsListPresenter.apply {
-            filteredFilms = films.filter {
-                it.genre_ids?.contains(genreId) ?: false
+            filteredMovies = movies.filter {
+                it.genre_ids.contains(genreId)
             }
-            viewState.renderFilteredFilms(filteredFilms)
+            viewState.renderFilteredFilms(filteredMovies)
         }
     }
 

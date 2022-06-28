@@ -36,7 +36,10 @@ class GenresAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(genre: Genre) {
-            binding.genre.text = genre.name
+            binding.genre.apply {
+                text = genre.name
+                isChecked = lastChecked?.text == text
+            }
         }
 
         fun onItemClick() {
