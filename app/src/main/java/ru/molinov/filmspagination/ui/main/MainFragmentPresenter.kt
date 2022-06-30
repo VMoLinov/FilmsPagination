@@ -85,8 +85,6 @@ class MainFragmentPresenter(
     }
 
     private fun setListener() {
-        moviesListPresenter.itemCLickListener = {
-        }
         genresListPresenter.itemCLickListener = {
             if (it != null) {
                 genreId = it.id
@@ -109,7 +107,6 @@ class MainFragmentPresenter(
 
     fun loadData() = api.getData(dataCallback, page++)
     fun loadGenres() = api.getGenres(genresCallback)
-
 
     companion object {
         const val TAG = "MainFragmentPresenter"

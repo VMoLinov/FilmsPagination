@@ -7,5 +7,6 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:indeterminate="true"
-    app:indicatorSize="100dp"
+    app:indicatorSize="80dp"
+    app:trackThickness="40dp"
     tools:context=".ui.MainActivity" />

@@ -3,9 +3,9 @@ package ru.molinov.filmspagination.ui.main
 import android.annotation.SuppressLint
 import android.content.res.Resources
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -35,10 +35,7 @@ class MoviesAdapter(
                 false
             )
         ).apply {
-            itemView.setOnClickListener {
-                presenter.itemCLickListener?.invoke(currentList[adapterPosition])
-                showDetails()
-            }
+            itemView.setOnClickListener { showDetails() }
         }
     }
 

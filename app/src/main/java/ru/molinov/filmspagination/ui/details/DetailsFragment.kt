@@ -38,15 +38,15 @@ class DetailsFragment : MvpAppCompatFragment(), DetailsFragmentView {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val animation = TransitionInflater.from(requireContext()).inflateTransition(
+        val sharedTransition = TransitionInflater.from(requireContext()).inflateTransition(
             android.R.transition.move
         )
-        sharedElementEnterTransition = animation
-        sharedElementReturnTransition = animation
-        val anim =
+        sharedElementEnterTransition = sharedTransition
+        sharedElementReturnTransition = sharedTransition
+        val fadeTransition =
             TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.fade)
-        enterTransition = anim
-        exitTransition = anim
+        enterTransition = fadeTransition
+        exitTransition = fadeTransition
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

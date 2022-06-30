@@ -6,7 +6,6 @@ import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.doOnAttach
 import androidx.core.view.doOnPreDraw
 import com.google.android.material.snackbar.Snackbar
 import moxy.MvpAppCompatFragment
@@ -44,10 +43,10 @@ class MainFragment : MvpAppCompatFragment(), MainFragmentView {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val anim =
+        val fadeTransition =
             TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.fade)
-        enterTransition = anim
-        exitTransition = anim
+        enterTransition = fadeTransition
+        exitTransition = fadeTransition.excludeTarget(R.id.rating, true)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -68,37 +67,16 @@ class MainFragment : MvpAppCompatFragment(), MainFragmentView {
     }
 
     override fun renderAllFilms(movies: List<Movie>) {
-        binding.recyclerFilms.post { moviesAdapter.submitList(movies) }
+        moviesAdapter.submitList(movies)
         binding.loading.animationView.visibility = View.GONE
     }
 
     override fun renderFilteredFilms(movies: List<Movie>) {
-        binding.recyclerFilms.post { moviesAdapter.submitList(movies) }
+        moviesAdapter.submitList(movies)
     }
 
     override fun renderGenres(genres: List<Genre>) {
-        binding.recyclerGenres.post { genresAdapter.submitList(genres) }
-    }
-
-    override fun notifyItemsExclude(position: Int, range: IntRange, scroll: Boolean) {
-        repeat(range.count()) {
-            binding.recyclerFilms.post {
-                if (it != position) moviesAdapter.notifyItemChanged(it)
-                if (scroll) binding.recyclerFilms.scrollToPosition(range.last)
-            }
-        }
-    }
-
-    override fun removeRange(range: List<Int>) {
-        binding.recyclerFilms.post {
-            moviesAdapter.notifyItemRangeRemoved(range.first(), range[range.lastIndex])
-        }
-    }
-
-    override fun addRange(range: List<Int>) {
-        binding.recyclerFilms.post {
-            moviesAdapter.notifyItemRangeInserted(range.first(), range[range.lastIndex])
-        }
+        genresAdapter.submitList(genres)
     }
 
     override fun showError(message: String) {

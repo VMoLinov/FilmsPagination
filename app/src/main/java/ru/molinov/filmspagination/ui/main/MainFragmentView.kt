@@ -15,12 +15,6 @@ interface MainFragmentView : MvpView {
 
     fun renderGenres(genres: List<Genre>)
 
-    fun notifyItemsExclude(position: Int, range: IntRange, scroll: Boolean)
-
-    fun removeRange(range: List<Int>)
-
-    fun addRange(range: List<Int>)
-
     @OneExecution
     fun showAlertDialog(message: Int)
 
