@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
-import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -16,10 +15,12 @@ import ru.molinov.filmspagination.model.Movie
 import ru.molinov.filmspagination.ui.details.DetailsFragment
 import ru.molinov.filmspagination.ui.imageloader.GlideImageLoader
 import ru.molinov.filmspagination.ui.imageloader.ImageLoader
+import kotlin.reflect.KFunction1
+import kotlin.reflect.KFunction2
 
 class MoviesAdapter(
     private val presenter: MainFragmentPresenter.MoviesListPresenter,
-    private val manager: FragmentManager,
+    private val sharedView: KFunction2<View, Movie, Unit>,
     private val imageLoader: ImageLoader = GlideImageLoader(),
     diff: DiffUtil.ItemCallback<Movie> = object : DiffUtil.ItemCallback<Movie>() {
         override fun areItemsTheSame(o: Movie, n: Movie): Boolean = o.id == n.id
@@ -35,7 +36,9 @@ class MoviesAdapter(
                 false
             )
         ).apply {
-            itemView.setOnClickListener { showDetails() }
+            itemView.findViewById<View>(R.id.movieImage).setOnClickListener {
+                sharedView.invoke(it, currentList[adapterPosition])
+            }
         }
     }
 
@@ -59,14 +62,6 @@ class MoviesAdapter(
             imageLoader.loadFilmPoster(movie.poster_path, movieImage, progressLayout.progressBar)
             loadRating(movie.vote_average)
             movieImage.transitionName = movie.title
-        }
-
-        fun showDetails() {
-            manager.beginTransaction()
-                .replace(R.id.container, DetailsFragment.newInstance(currentList[adapterPosition]))
-                .addSharedElement(binding.movieImage, "shared")
-                .addToBackStack(null)
-                .commit()
         }
 
         private fun loadRating(vote: Float?) = with(binding) {

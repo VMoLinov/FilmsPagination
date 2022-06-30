@@ -2,10 +2,10 @@ package ru.molinov.filmspagination.ui.details
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.transition.TransitionInflater
 import com.google.android.material.snackbar.Snackbar
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
@@ -39,14 +39,12 @@ class DetailsFragment : MvpAppCompatFragment(), DetailsFragmentView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val sharedTransition = TransitionInflater.from(requireContext()).inflateTransition(
-            android.R.transition.move
+            R.transition.move
         )
         sharedElementEnterTransition = sharedTransition
         sharedElementReturnTransition = sharedTransition
-        val fadeTransition =
-            TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.fade)
-        enterTransition = fadeTransition
-        exitTransition = fadeTransition
+        val anim = TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.fade)
+        enterTransition = anim
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -18,5 +18,6 @@ interface MainFragmentView : MvpView {
     @OneExecution
     fun showAlertDialog(message: Int)
 
+    @OneExecution
     fun showError(message: String)
 }

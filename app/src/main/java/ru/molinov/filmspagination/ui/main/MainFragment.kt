@@ -2,11 +2,11 @@ package ru.molinov.filmspagination.ui.main
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnPreDraw
+import androidx.transition.TransitionInflater
 import com.google.android.material.snackbar.Snackbar
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
@@ -16,6 +16,7 @@ import ru.molinov.filmspagination.model.Genre
 import ru.molinov.filmspagination.model.Movie
 import ru.molinov.filmspagination.remote.ApiHolder
 import ru.molinov.filmspagination.ui.MainActivity
+import ru.molinov.filmspagination.ui.details.DetailsFragment
 
 class MainFragment : MvpAppCompatFragment(), MainFragmentView {
 
@@ -27,10 +28,19 @@ class MainFragment : MvpAppCompatFragment(), MainFragmentView {
     private val moviesAdapter by lazy {
         MoviesAdapter(
             presenter.moviesListPresenter,
-            parentFragmentManager
+            ::clickListener
         )
     }
     private val genresAdapter by lazy { GenresAdapter(presenter.genresListPresenter) }
+
+    private fun clickListener(view: View, movie: Movie) {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.container, DetailsFragment.newInstance(movie))
+            .setReorderingAllowed(true)
+            .addSharedElement(view, "shared")
+            .addToBackStack(null)
+            .commit()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,8 +54,8 @@ class MainFragment : MvpAppCompatFragment(), MainFragmentView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val fadeTransition =
-            TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.fade)
-        enterTransition = fadeTransition
+            TransitionInflater.from(requireContext())
+                .inflateTransition(android.R.transition.explode)
         exitTransition = fadeTransition.excludeTarget(R.id.rating, true)
     }
 
