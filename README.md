@@ -4,3 +4,4 @@
 - Shared element transition
 - Glide
 - Lottie
+- Recycler filter
