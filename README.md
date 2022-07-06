@@ -1,0 +1,6 @@
+# FilmsPagination
+- MVP Moxy
+- Retrofit
+- Shared element transition
+- Glide
+- Lottie
