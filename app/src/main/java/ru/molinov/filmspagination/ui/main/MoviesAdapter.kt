@@ -12,10 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.molinov.filmspagination.R
 import ru.molinov.filmspagination.databinding.ItemRecyclerMainMovieBinding
 import ru.molinov.filmspagination.model.Movie
-import ru.molinov.filmspagination.ui.details.DetailsFragment
 import ru.molinov.filmspagination.ui.imageloader.GlideImageLoader
 import ru.molinov.filmspagination.ui.imageloader.ImageLoader
-import kotlin.reflect.KFunction1
 import kotlin.reflect.KFunction2
 
 class MoviesAdapter(
@@ -35,11 +33,7 @@ class MoviesAdapter(
                 parent,
                 false
             )
-        ).apply {
-            itemView.findViewById<View>(R.id.movieImage).setOnClickListener {
-                sharedView.invoke(it, currentList[adapterPosition])
-            }
-        }
+        ).apply { itemView.setOnClickListener { onItemClicked() } }
     }
 
     override fun getItemCount(): Int = currentList.size
@@ -62,6 +56,10 @@ class MoviesAdapter(
             imageLoader.loadFilmPoster(movie.poster_path, movieImage, progressLayout.progressBar)
             loadRating(movie.vote_average)
             movieImage.transitionName = movie.title
+        }
+
+        fun onItemClicked() {
+            sharedView.invoke(binding.movieImage, currentList[adapterPosition])
         }
 
         private fun loadRating(vote: Float?) = with(binding) {
